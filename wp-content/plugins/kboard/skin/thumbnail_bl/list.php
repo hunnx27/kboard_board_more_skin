@@ -11,7 +11,6 @@
 		</div>
 	</div>
 	<script>
-		var page = 0;
 		function list_more(obj, board_id){
 			var keyword = jQuery('input[name=keyword]').val();
 			var page_url = kboard_settings.ajax_url;
@@ -107,6 +106,11 @@
 	<div class="kboard-list bl_galley">
 		<div class="bl_galley_list">
 				<ul class="grid-container">
+					<!--
+
+						** 리스트 출력 부분(list_more.php 참조) **
+
+					-->
 				</ul>
 		</div>
 	</div>
@@ -117,7 +121,6 @@
 <br/>
 <br/>
 <br/>
-
 <?php echo var_dump($board) ?>
 -->
 <!--
