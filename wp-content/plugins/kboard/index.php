@@ -63,6 +63,8 @@ include_once 'helper/Pagination.helper.php';
 include_once 'helper/Security.helper.php';
 include_once 'helper/Functions.helper.php';
 
+include_once 'class/KBoardBuilderCustom.class.php';
+
 /*
  * 애드온 파일 로딩
  */
@@ -109,7 +111,7 @@ function kboard_init(){
 		if(!in_array($kboard_list_sort, kboard_list_sorting_types())){
 			$kboard_list_sort = '';
 		}
-		$_COOKIE["hiroo_{$kboard_list_sort_remember}"] = $kboard_list_sort;
+		
 		if($kboard_list_sort){
 			$_COOKIE["kboard_list_sort_{$kboard_list_sort_remember}"] = $kboard_list_sort;
 			setcookie("kboard_list_sort_{$kboard_list_sort_remember}", $kboard_list_sort, strtotime('+1 year'), COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true);
@@ -241,6 +243,7 @@ function kboard_welcome_panel(){
 	echo '<script>jQuery(document).ready(function(){jQuery("div.welcome-panel-content").eq(0).hide();});</script>';
 	include_once 'pages/welcome.php';
 }
+
 
 /*
  * 관리자메뉴에 추가
@@ -996,6 +999,78 @@ function kboard_latestview_shortcode($args){
 /*
  * 비동기 게시판 빌더
  */
+/*
+ * 관리자메뉴에 추가
+ */
+add_action('wp_ajax_kboard_ajax_list_more', 'kboard_ajax_list_more');
+add_action('wp_ajax_kboard_ajax_list_more', 'kboard_ajax_list_more');
+function kboard_ajax_list_more(){
+	if(isset($_REQUEST['board_id']) && $_REQUEST['board_id']){
+		$board_id = intval($_REQUEST['board_id']);
+	}
+
+	$board = new KBoard();
+	$board->setID($board_id);
+
+
+	if($board->id){
+		$builder = new KBoardBuilderCustom($board->id);
+		$builder->mod = 'list';
+		$builder->board = $board;
+		$builder->is_ajax = true;
+		$builder->view_iframe = $board->meta->view_iframe;
+		
+		if(isset($_REQUEST['view_iframe'])){
+			$builder->view_iframe = $_REQUEST['view_iframe'] ? '1' : '';
+		}
+		
+		if(isset($_REQUEST['rpp']) && $_REQUEST['rpp']){
+			$builder->setRpp($_REQUEST['rpp']);
+		}
+		else{
+			$builder->setRpp($board->page_rpp);
+		}
+		
+		if(isset($_REQUEST['sort']) && $_REQUEST['sort']){
+			$sort = sanitize_key($_REQUEST['sort']);
+			$builder->setSorting($sort);
+		}
+		
+		if(isset($_REQUEST['base_url']) && $_REQUEST['base_url']){
+			$builder->setURL($_REQUEST['base_url']);
+		}
+		else{
+			$builder->setURL(wp_get_referer());
+		}
+		
+		if(isset($_REQUEST['skin']) && $_REQUEST['skin']){
+			$skin = sanitize_key($_REQUEST['skin']);
+			$builder->setSkin($skin);
+		}
+		else{
+			$builder->setSkin($board->skin);
+		}
+		
+		$ajax_builder_type = 'array';
+		if(isset($_REQUEST['ajax_builder_type']) && in_array($_REQUEST['ajax_builder_type'], array('array', 'html'))){
+			$ajax_builder_type = $_REQUEST['ajax_builder_type'];
+		}
+	}
+
+
+	echo $builder->getListHTML();
+
+
+
+
+	
+	
+	wp_die();
+}
+
+
+
+
 add_action('wp_ajax_kboard_ajax_builder', 'kboard_ajax_builder');
 add_action('wp_ajax_nopriv_kboard_ajax_builder', 'kboard_ajax_builder');
 function kboard_ajax_builder(){
