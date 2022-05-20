@@ -37,6 +37,7 @@
     <td class="kboard-list-view"><?php echo $content->view?></td>
 </tr>
 <?php endwhile?>
+-->
 <?php while($content = $list->hasNext()):?>
 <li class="grid-item <?php if($content->uid == kboard_uid()):?>kboard-list-selected<?php endif?>">
     
