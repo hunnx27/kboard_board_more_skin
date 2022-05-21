@@ -1003,7 +1003,7 @@ function kboard_latestview_shortcode($args){
  * 관리자메뉴에 추가
  */
 add_action('wp_ajax_kboard_ajax_list_more', 'kboard_ajax_list_more');
-add_action('wp_ajax_kboard_ajax_list_more', 'kboard_ajax_list_more');
+add_action('wp_ajax_nopriv_kboard_ajax_list_more', 'kboard_ajax_list_more');
 function kboard_ajax_list_more(){
 	if(isset($_REQUEST['board_id']) && $_REQUEST['board_id']){
 		$board_id = intval($_REQUEST['board_id']);
